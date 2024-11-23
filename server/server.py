@@ -1,7 +1,9 @@
 from typing import Union
-from freestyle import nutriscore_by_ID
+from freestyle import HealthScoreByID, Stack, score_stack
 
 from fastapi import FastAPI
+
+health_stack = Stack()
 
 app = FastAPI()
 
@@ -18,6 +20,9 @@ def read_item(item_id: int, q: Union[str, None] = None):
 # main(id) -> progressValue
 @app.get("/freestyle/{productID}")
 def read_item(productID: int, q: Union[str, None] = None):
-    return {"Progress Value": nutriscore_by_ID(productID), "q":q}
-
-
+    hScore = HealthScoreByID(productID)
+    if hScore == -1:
+        return {"Progress Value": health_stack.peek(), "q":q, "health stack": health_stack, "score stack": score_stack}
+    else:
+        print(health_stack.push(hScore))
+        return {"Progress Value": hScore, "q":q, "health stack": health_stack, "score stack": score_stack}
