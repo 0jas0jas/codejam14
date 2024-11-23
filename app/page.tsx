@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -14,25 +15,13 @@ export default function Home() {
       <div className="col-span-4 text-xl font-black h-200px text-center align-middle leading-[200px]">
         <div className="">Where's my Jam?</div>
       </div>
-      <div className="col-span-4 text-amber-950">
-        <label>
-          <input type="radio" className="nes-radio" name="answer" />
-          <span>FreeStyle</span>
-        </label>
-
-        <label>
-          <input type="radio" className="nes-radio" name="answer" />
-          <span>One Thing</span>
-        </label>
-        <label>
-          <input type="radio" className="nes-radio" name="answer" />
-          <span>American Ranking</span>
-        </label>
-        <label>
-          <input type="radio" className="nes-radio" name="answer" />
-          <span>Indian Test</span>
-        </label>
+      <div className="col-span-4 text-amber-950 flex flex-col justify-between h-[250px]">
+        <Link href='/freestyle' className="nes-btn !text-black is-primary"><button type="button" >Freestyle</button></Link>
+        <Link href='' className="nes-btn !text-black is-success"><button type="button">One Thing</button></Link>
+        <Link href='' className="nes-btn !text-black is-warning"><button type="button" >American Check</button></Link>
+        <Link href='' className="nes-btn !text-black is-error"><button type="button" >Indian Test</button></Link>
       </div>
     </div>
   );
 }
+ 
