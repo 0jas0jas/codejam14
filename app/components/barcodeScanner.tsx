@@ -1,29 +1,35 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import Scanner from './Scanner';
 
 const BarcodeScanner: React.FC = () => {
   const [scanning, setScanning] = useState(false);
   const [results, setResults] = useState<Array<{ codeResult: { code: string } }>>([]);
-  // const [results, setResults] = useState([]);
+  const recentlyScanned = useRef<Set<String>>((new Set));
+
 
   const toggleScanning = () => {
+    if (!scanning) {
+      recentlyScanned.current.clear(); 
+    }
     setScanning((prev) => !prev);
   };
+  
 
   const handleDetected = (result: { codeResult: { code: string } }) => {
     const newCode = result.codeResult.code;
-    setResults((prevResults) => {
-      const alreadyExists = prevResults.some(
-        (r) => r.codeResult.code === newCode
-      );
-      if (!alreadyExists) {
-        return [...prevResults, result];
-      }
-      return prevResults;
-    });
+  
+    if (!recentlyScanned.current.has(newCode)) {      
+      setResults((prevResults) => [...prevResults, result]);
+      recentlyScanned.current.add(newCode);
+  
+      setTimeout(() => {
+        recentlyScanned.current.delete(newCode);
+      }, 2000);
+    }
   };
+  
 
   return (
     <div style={{ textAlign: 'center', padding: '20px' }}>
@@ -38,7 +44,7 @@ const BarcodeScanner: React.FC = () => {
         className={`nes-btn ${scanning ? 'is-error' : 'is-success'}`}
         style={{ marginTop: '20px', padding: '10px 20px' }}
       >
-        {scanning ? 'Stop' : 'Start'}
+        {scanning ? 'Checkout' : 'Start'}
       </button>
 
       {/* Show results only when scanning stops */}
