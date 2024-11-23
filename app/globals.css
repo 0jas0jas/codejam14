@@ -1,6 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
 
 :root {
   --background: #ffffff;
@@ -9,7 +11,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: linear-gradient(0deg, #fec163, #de4313);
     --foreground: #ededed;
   }
 }
@@ -17,5 +19,9 @@
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  background-repeat: no-repeat;
+  background-size: 100vw 100vh;
+  font-family: var(--font-2p);
 }
+
+
