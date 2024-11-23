@@ -1,7 +1,9 @@
 import 'nes.css/css/nes.min.css';
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { Press_Start_2P } from "next/font/google";
 import "./globals.css";
+
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -13,6 +15,12 @@ const geistMono = localFont({
   variable: "--font-geist-mono",
   weight: "100 900",
 });
+
+export const press_start_2p_init = Press_Start_2P({
+  subsets: ['latin'],
+  weight: "400",
+  variable: '--font-2p'
+})
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -27,7 +35,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${press_start_2p_init.variable} ${geistMono.variable} antialiased`}
       >
         {children}
       </body>
