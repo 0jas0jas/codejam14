@@ -61,7 +61,7 @@ def add_score_by_ID(ID):
         else:
             print(current_year)
             break
-    
+
     grade = info_dict['product']['nutriscore'][current_year]['grade']
 
     score = score_map[grade]
@@ -72,5 +72,5 @@ def add_score_by_ID(ID):
 
 
 #s = add_score_by_ID(3045140105502)
-s = add_score_by_ID(96619281954)
+s = add_score_by_ID(123)
 print(s)
