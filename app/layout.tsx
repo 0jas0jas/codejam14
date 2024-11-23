@@ -1,3 +1,4 @@
+import 'nes.css/css/nes.min.css';
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
