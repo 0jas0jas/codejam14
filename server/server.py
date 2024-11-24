@@ -1,8 +1,10 @@
+import json
 from typing import Union
 from freestyle import HealthScoreByID, Stack, score_stack, get_stats
 from fastapi.middleware.cors import CORSMiddleware
 
 from fastapi import FastAPI
+from OA import generate_new_recipes
 
 health_stack = Stack()
 
@@ -42,3 +44,18 @@ def read_item(productID: int, q: Union[str, None] = None):
         print(health_stack.push(hScore))
         return {"Progress Value": hScore, "q":q, "health stack": health_stack, "total score stack": score_stack}
     
+
+#
+# THIS IS FOR CORNFUSION
+#
+
+@app.get("/cornfusion/{productID}")
+def read_item(productID: int, q: Union[str, None] = None):
+    result = generate_new_recipes(productID)
+    # Slice the string and parse it as JSON
+    try:
+        json_result = json.loads(result[7:-3])
+        return json_result  # FastAPI will serialize this to a proper JSON response
+    except json.JSONDecodeError as e:
+        # Handle cases where the result cannot be parsed as JSON
+        return {"error": "Invalid JSON response from generate_new_recipes", "details": str(e)}
