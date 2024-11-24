@@ -26,6 +26,12 @@ def read_root():
 def read_item(item_id: int, q: Union[str, None] = None):
     return {"item_id": item_id, "q": q}
 
+@app.get("/freestyle/stats")
+def get_stats_info(q: Union[str, None] = None):
+    prods, indivs, cats = get_stats()
+    print(cats["bad"])
+    return {"q": q, "good": cats['good'], "bad": cats['bad'], "neutral": cats['neutral'], "products": prods, "individual scores": indivs}
+
 # main(id) -> progressValue
 @app.get("/freestyle/{productID}")
 def read_item(productID: int, q: Union[str, None] = None):
@@ -36,7 +42,3 @@ def read_item(productID: int, q: Union[str, None] = None):
         print(health_stack.push(hScore))
         return {"Progress Value": hScore, "q":q, "health stack": health_stack, "total score stack": score_stack}
     
-@app.get("/freestyle/stats")
-def stats(q: Union[str, None] = None):
-    prods, indivs, cats = get_stats()
-    return {"q":q, "good": cats['good'], "bad": cats['bad'], "neutral": cats['neutral'], "products" : prods, "individual scores" : indivs}
