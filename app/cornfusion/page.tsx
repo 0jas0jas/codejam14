@@ -1,17 +1,18 @@
+'use client';
+
 import React from 'react';
 import BarcodeScanner from '../components/barcodeScanner';
-import HelthBar from '../components/helthBar';
 import { HealthPointsProvider } from '../contexts/HealthPointsContext';
 
-const Page: React.FC = () => {
+const Cornfusion: React.FC = () => {
   return (
     <div className="p-3">
       <HealthPointsProvider>
-        <HelthBar n={10} />
-        <BarcodeScanner mode="freestyle" />
+        <BarcodeScanner mode="cornfusion" />
       </HealthPointsProvider>
     </div>
   );
 };
 
-export default Page;
+export default Cornfusion;
+

@@ -56,7 +56,7 @@ export default function Page() {
                 datasets: [
                     {
                         label: '# of Items',
-                        data: [goodCount, badCount, neutralCount], // Use the updated stats
+                        data: [goodCount, neutralCount, badCount ], // Use the updated stats
                         backgroundColor: [
                             'rgba(6, 255, 0, 0.5)',
                             'rgba(255, 228, 0, 0.5)',
