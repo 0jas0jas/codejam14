@@ -10,6 +10,7 @@ import RecipeCard from './recipeCard';
 import FetchResponse from './fetchResponse';
 import FetchCal from './fetchCal';
 import IndianCard from './indianCard';
+import AmericanCard from './americanCard';
 
 interface BarcodeScannerProps {
   mode: 'freestyle' | 'cornfusion' | 'indian' | 'american';
@@ -24,6 +25,8 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ mode }) => {
   const [response, setResponse] = useState<string>('');
   const [cal, setCal] = useState(0);
   const [isIndian, setIsIndian] = useState("");
+  const [hasFetchedResponse, setHasFetchedResponse] = useState(false);
+
 
   // States for recipes in cornfusion mode
   const [names, setNames] = useState<string[]>([]);
@@ -42,8 +45,10 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ mode }) => {
   };
 
   const handleResponseFetchComplete = (fetchedResponse: string) => {
-    setIsIndian(fetchedResponse); 
+    setIsIndian(fetchedResponse);
+    setHasFetchedResponse(true); // Mark that the response has been fetched
   };
+  
   
 
   const handleCalFetchComplete = (fetchedCal: number) => {
@@ -61,6 +66,7 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ mode }) => {
       // Handle starting the scanner
       recentlyScanned.current.clear();
       setScanning(true);
+      setHasFetchedResponse(false); // Reset the fetched response state
     }
   };
 
@@ -99,10 +105,9 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ mode }) => {
       {!scanning && mode === 'indian' && (
         <FetchResponse onFetchComplete={handleResponseFetchComplete} />
       )}
-      {!scanning && mode === 'indian' && isIndian && (
+      {!scanning && mode === 'indian' && hasFetchedResponse && (
         <IndianCard isIndian={isIndian} />
       )}
-
 
 
       {/* Trigger FetchRecipes dynamically for cornfusion mode */}
@@ -110,9 +115,12 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ mode }) => {
         <FetchRecipes productID={currentProductID} onFetchComplete={handleRecipeFetchComplete} />
       )}
 
-      {/* Trigger FetchResponse for american mode */}
-      {currentProductID !== null && (mode === 'freestyle' || mode === 'indian' || mode === 'american') && (
+      {/* Trigger FetchCal for american mode */}
+      {!scanning && mode === 'american' && (
         <FetchCal onFetchComplete={handleCalFetchComplete} />
+      )}
+      {!scanning && mode === 'american' && cal && (
+        <AmericanCard cals={cal} />
       )}
 
       <button
