@@ -10,6 +10,7 @@ class Stack:
         self.indiv_scores = [] # stores individual score
         self.max_score = 0
         self.categories = {'good' : 0, 'bad' : 0, 'neutral' : 0}
+        self.calories = 0
 
     def push(self, item):
         self.scores.append(item)
@@ -32,10 +33,11 @@ class Stack:
     def size(self):
         return len(self.scores)
     
-    def add_score(self, score_new : int, prod_name : str):
+    def add_score(self, score_new : int, prod_name : str, energy : int):
         self.push(self.peek() + score_new)
         self.max_score += 10
         self.products.append(prod_name)
+        self.calories += energy
         if score_new < 0:
             self.indiv_scores.append(str(score_new))
             self.categories['bad'] += 1
@@ -108,13 +110,17 @@ def HealthScoreByID(ID : int):
         #print(score)
         #print('stack before adding', score_stack)
         prod_name = info_dict['product']['product_name']
-        score_stack.add_score(score, prod_name)
+        energy = info_dict['product']['nutriments']['energy'] 
+        score_stack.add_score(score, prod_name, energy)
         #print('stack after adding', score_stack)
 
         return int(TotalScoreByNutriscore(score_stack, score_stack.peek()))
     
 def get_stats():
     return (score_stack.products, score_stack.indiv_scores, score_stack.categories)
+
+def get_cals():
+    return score_stack.calories
 
 if __name__ == '__main__':
     #score_stack.add_score(10)

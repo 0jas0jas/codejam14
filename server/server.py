@@ -59,3 +59,8 @@ def read_item(productID: int, q: Union[str, None] = None):
     except json.JSONDecodeError as e:
         # Handle cases where the result cannot be parsed as JSON
         return {"error": "Invalid JSON response from generate_new_recipes", "details": str(e)}
+    
+@app.get("/american/test")
+def get_cals(q: Union[str, None] = None):
+    cals = get_cals()
+    return {"q":q, "total calories": cals}
