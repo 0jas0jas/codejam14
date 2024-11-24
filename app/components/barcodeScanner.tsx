@@ -8,9 +8,10 @@ import { useHealthPoints } from '../contexts/HealthPointsContext';
 import { redirect } from 'next/navigation';
 import RecipeCard from './recipeCard';
 import FetchResponse from './fetchResponse';
+import FetchCal from './fetchCal';
 
 interface BarcodeScannerProps {
-  mode: 'freestyle' | 'cornfusion' | 'indian';
+  mode: 'freestyle' | 'cornfusion' | 'indian' | 'american';
 }
 
 const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ mode }) => {
@@ -20,14 +21,12 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ mode }) => {
   const { healthPoints, setHealthPoints } = useHealthPoints();
   const [currentProductID, setCurrentProductID] = useState<number | null>(null);
   const [response, setResponse] = useState("");
+  const [cal, setCal] = useState(0);
 
   // States for recipes in cornfusion mode
   const [names, setNames] = useState<string[]>([]);
   const [ingredients, setIngredients] = useState<string[][]>([]);
   const [showRecipes, setShowRecipes] = useState(false); // Controls recipe display in cornfusion mode
-
-  // State for Indian Score mode
-  const [indianScore, setIndianScore] = useState<number | null>(null);
 
   const handleHpFetchComplete = (result: number): void => {
     setHealthPoints(result); // Update healthPoints context
@@ -42,6 +41,10 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ mode }) => {
 
   const handleResponseFetchComplete = (fetchedResponse: string) => {
     setResponse(fetchedResponse);
+  };
+
+  const handleCalFetchComplete = (fetchedCal: number) => {
+    setCal(fetchedCal);
   };
 
   const toggleScanning = () => {
@@ -81,22 +84,27 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ mode }) => {
       <h1>Barcode Scanner</h1>
 
       {/* Render Scanner while scanning is active */}
-      {scanning && (mode === 'freestyle' || mode === 'indian') && <Scanner onDetected={handleDetected} />}
+      {scanning && (mode === 'freestyle' || mode === 'indian' || mode === 'american') && <Scanner onDetected={handleDetected} />}
       {scanning && mode === 'cornfusion' && !showRecipes && <Scanner onDetected={handleDetected} />}
 
       {/* Trigger FetchHp dynamically for freestyle mode */}
-      {currentProductID !== null && (mode === 'freestyle' || mode === 'indian') && (
+      {currentProductID !== null && (mode === 'freestyle' || mode === 'indian' || mode === 'american') && (
         <FetchHp productID={currentProductID} onFetchComplete={handleHpFetchComplete} />
       )}
       
-      {/* Trigger FetchHp dynamically for freestyle mode */}
-      {currentProductID !== null && (mode === 'freestyle' || mode === 'indian') && (
+      {/* Trigger FetchResponse for indian mode */}
+      {currentProductID !== null && (mode === 'freestyle' || mode === 'indian' || mode === 'american') && (
         <FetchResponse onFetchComplete={handleResponseFetchComplete} />
       )}
 
       {/* Trigger FetchRecipes dynamically for cornfusion mode */}
       {currentProductID !== null && mode === 'cornfusion' && !showRecipes && (
         <FetchRecipes productID={currentProductID} onFetchComplete={handleRecipeFetchComplete} />
+      )}
+
+      {/* Trigger FetchResponse for indian mode */}
+      {currentProductID !== null && (mode === 'freestyle' || mode === 'indian' || mode === 'american') && (
+        <FetchCal onFetchComplete={handleResponseFetchComplete} />
       )}
 
       <button
@@ -109,7 +117,7 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ mode }) => {
       </button>
 
       {/* Show scanned barcodes for freestyle mode */}
-      {!scanning && (mode === 'freestyle' || mode === 'indian') && (
+      {!scanning && (mode === 'freestyle' || mode === 'indian' || mode === 'american') && (
         <div style={{ marginTop: '20px' }}>
           <h2>Scanned Barcodes</h2>
           <ul>
@@ -127,7 +135,6 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ mode }) => {
         <div style={{ marginTop: '20px' }}>
           <h2>Recipes</h2>
           <RecipeCard titles={names} recipes={ingredients} />
-
         </div>
       )}
     </div>

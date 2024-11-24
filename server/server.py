@@ -61,13 +61,16 @@ def read_item(productID: int, q: Union[str, None] = None):
         # Handle cases where the result cannot be parsed as JSON
         return {"error": "Invalid JSON response from generate_new_recipes", "details": str(e)}
     
-@app.get("/american/test")
+@app.get("/american/")
 def get_cals(q: Union[str, None] = None):
     cals = get_cals()
     return {"q":q, "total calories": cals}
 
 @app.get("/indian/")
 def get_response(q: Union[str, None] = None):
-    print(score_stack.products)
+    # print(score_stack.products)
     response = isIndian(score_stack.products)
     return {"q":q, "is_indian": response}
+
+# 6kcal
+# 
