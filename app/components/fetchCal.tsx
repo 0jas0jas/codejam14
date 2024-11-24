@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 
 interface APIComponentProps {
-    onFetchComplete: (calories : string) => void;
+    onFetchComplete: (calories : number) => void;
 }
 
 const FetchCal: React.FC<APIComponentProps> = ({ onFetchComplete }) => {

@@ -2,7 +2,7 @@ import json
 from typing import Union
 from freestyle import HealthScoreByID, Stack, score_stack, get_stats
 from fastapi.middleware.cors import CORSMiddleware
-from OA import isIndian
+from OA import ProdNameByID, isIndian
 
 from fastapi import FastAPI
 from OA import generate_new_recipes
@@ -10,6 +10,7 @@ from OA import generate_new_recipes
 health_stack = Stack()
 
 app = FastAPI()
+names = []
 
 app.add_middleware(
     CORSMiddleware,
@@ -38,6 +39,7 @@ def get_stats_info(q: Union[str, None] = None):
 # main(id) -> progressValue
 @app.get("/freestyle/{productID}")
 def read_item(productID: int, q: Union[str, None] = None):
+    names.append(ProdNameByID(productID))
     hScore = HealthScoreByID(productID)
     if hScore == -1:
         return {"Progress Value": health_stack.peek(), "q":q, "health stack": health_stack, "total score stack": score_stack}
@@ -68,8 +70,9 @@ def get_cals(q: Union[str, None] = None):
 
 @app.get("/indian/")
 def get_response(q: Union[str, None] = None):
-    # print(score_stack.products)
-    response = isIndian(score_stack.products)
+    print(names)
+    response = isIndian(names)
+    print(response)
     return {"q":q, "is_indian": response}
 
 # 6kcal
