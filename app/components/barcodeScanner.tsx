@@ -19,6 +19,10 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ mode }) => {
   const [currentProductID, setCurrentProductID] = useState<number | null>(null);
   const [linkWhere, setLink] = useState('');
 
+  // States for cornfusion
+  const [names, setNames] = useState<string[]>([]); // Array for recipe names
+  const [ingredients, setIngredients] = useState<string[][]>([]); // 2D array for ingredients
+
   const handleFetchComplete = (result: number): void => {
     setHealthPoints(result); // Update healthPoints context
     setCurrentProductID(null); // Clear currentProductID after fetch
@@ -48,11 +52,11 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ mode }) => {
       }, 2500);
     }
 
-    if(mode == 'cornfusion') {
-      redirect('/cornfusion/recipes');
+    if (mode === 'cornfusion') {
+      // Redirect to the /cornfusion/recipes page with productID as a query parameter
+      redirect(`/cornfusion/recipes?productID=${newCode}`);
     }
   };
-
   return (
     <div style={{ textAlign: 'center', padding: '20px' }}>
       <h1>Barcode Scanner</h1>
