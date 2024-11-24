@@ -4,13 +4,20 @@ import React, { useRef, useState } from 'react';
 import Scanner from './Scanner';
 import FetchHp from './fetchHp';
 import { useHealthPoints } from '../contexts/HealthPointsContext';
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
 
-const BarcodeScanner: React.FC = () => {
+interface BarcodeScannerProps {
+  mode: 'freestyle' | 'cornfusion'
+}
+
+const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ mode }) => {
   const [scanning, setScanning] = useState(false);
   const [results, setResults] = useState<Array<{ codeResult: { code: string } }>>([]);
   const recentlyScanned = useRef<Set<string>>(new Set());
   const { healthPoints, setHealthPoints } = useHealthPoints();
   const [currentProductID, setCurrentProductID] = useState<number | null>(null);
+  const [linkWhere, setLink] = useState('');
 
   const handleFetchComplete = (result: number): void => {
     setHealthPoints(result); // Update healthPoints context
@@ -21,6 +28,7 @@ const BarcodeScanner: React.FC = () => {
     if (!scanning) {
       recentlyScanned.current.clear();
     }
+    if (mode == 'freestyle') setLink('./freestyle/anal')
     setScanning((prev) => !prev);
   };
 
@@ -39,6 +47,10 @@ const BarcodeScanner: React.FC = () => {
         recentlyScanned.current.delete(newCode);
       }, 2500);
     }
+
+    if(mode == 'cornfusion') {
+      redirect('/cornfusion/recipes');
+    }
   };
 
   return (
@@ -52,20 +64,18 @@ const BarcodeScanner: React.FC = () => {
       {currentProductID !== null && (
         <FetchHp productID={currentProductID} onFetchComplete={handleFetchComplete} />
       )}
-
       {/* Button to toggle scanning */}
-      <button
+      <Link href={linkWhere}><button
         onClick={toggleScanning}
         className={`nes-btn !text-black ${scanning ? 'is-error' : 'is-success'}`}
         style={{ marginTop: '20px', padding: '10px 20px' }}
       >
         {scanning ? 'Checkout' : 'Start'}
-      </button>
+      </button></Link>
 
       {/* Show results only when scanning stops */}
       {!scanning && (
         <div style={{ marginTop: '20px' }}>
-          <h1>{healthPoints}</h1>
           <h2>Scanned Barcodes</h2>
           <ul>
             {results.map((result, index) => (
