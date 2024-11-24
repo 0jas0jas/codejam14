@@ -17,7 +17,7 @@ const FetchHp: React.FC<APIComponentProps> = ({ productID, onFetchComplete }) =>
         onFetchComplete(n); // Call the parent function with `n`
       } catch (error) {
         console.error('Error fetching data:', error);
-        onFetchComplete(-1); 
+        onFetchComplete(50); 
       }
     };
 

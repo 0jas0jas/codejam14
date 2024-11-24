@@ -3,7 +3,7 @@
 import React, { useRef, useState } from 'react';
 import Scanner from './Scanner';
 import FetchHp from './fetchHp';
-import HealthBar from './helthBar';
+import { useHealthPoints } from '../contexts/HealthPointsContext';
 
 
 
@@ -11,10 +11,10 @@ const BarcodeScanner: React.FC = () => {
   const [scanning, setScanning] = useState(false);
   const [results, setResults] = useState<Array<{ codeResult: { code: string } }>>([]);
   const recentlyScanned = useRef<Set<String>>((new Set));
-  const [healthPoints, setHealthPoints] = useState<number>(50); // State to store HP value
-    
+  const { healthPoints, setHealthPoints } = useHealthPoints(); // Access context
+
   const handleFetchComplete = (result: number): void => {
-      setHealthPoints(result); 
+      setHealthPoints(result); // Update healthPoints when API fetch completes
   };
 
 
@@ -44,7 +44,6 @@ const BarcodeScanner: React.FC = () => {
 
   return (
     <div style={{ textAlign: 'center', padding: '20px' }}>
-      <HealthBar n={healthPoints} />
       <h1>Barcode Scanner</h1>
       
       {/* Show Scanner while scanning is active */}
