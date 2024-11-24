@@ -5,36 +5,49 @@ import requests
 
 class Stack:
     def __init__(self):
-        self.items = []
+        self.scores = [] # stores the total score
+        self.products = [] # stores product name
+        self.indiv_scores = [] # stores individual score
         self.max_score = 0
+        self.categories = {'good' : 0, 'bad' : 0, 'neutral' : 0}
 
     def push(self, item):
-        self.items.append(item)
+        self.scores.append(item)
 
     def pop(self):
         if self.is_empty():
             raise IndexError("Pop from an empty stack")
         self.length -= 1
         self.max_score -= 10
-        return self.items.pop()
+        return self.scores.pop()
 
     def peek(self):
         if self.is_empty():
             return 0
-        return self.items[-1]
+        return self.scores[-1]
 
     def is_empty(self):
-        return len(self.items) == 0
+        return len(self.scores) == 0
 
     def size(self):
-        return len(self.items)
+        return len(self.scores)
     
-    def add_score(self, score_new):
+    def add_score(self, score_new : int, prod_name : str):
         self.push(self.peek() + score_new)
         self.max_score += 10
+        self.products.append(prod_name)
+        if score_new < 0:
+            self.indiv_scores.append(score_new)
+            self.categories['bad'] += 1
+        elif score_new > 0:
+            self.indiv_scores.append("+" + str(score_new))
+            self.categories['good'] += 1
+        else: 
+            self.indiv_scores.append(score_new)
+            self.categories['neutral'] += 1
 
     def __str__(self):
-        return f"Stack({self.items})"
+        return f"Stack({self.scores})"
 
 score_stack = Stack()
 
@@ -68,7 +81,8 @@ def HealthScoreByID(ID : int):
 
     #print('response received')
 
-    if info_dict['status'] == 0: # product not found in directory
+    # product not found in database
+    if info_dict['status'] == 0: 
         return -1 
 
     # find most recent year for which nutriscore exists
@@ -85,6 +99,7 @@ def HealthScoreByID(ID : int):
 
     grade = info_dict['product']['nutriscore'][current_year]['grade']
 
+    # handle non-letter grades
     if grade not in score_map:
         return -1
         #print(grade)
@@ -92,7 +107,8 @@ def HealthScoreByID(ID : int):
         score = score_map[grade]
         #print(score)
         #print('stack before adding', score_stack)
-        score_stack.add_score(score)
+        prod_name = info_dict['product']['product_name']
+        score_stack.add_score(score, prod_name)
         #print('stack after adding', score_stack)
 
         return int(TotalScoreByNutriscore(score_stack, score_stack.peek()))
