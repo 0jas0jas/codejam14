@@ -31,7 +31,8 @@ def read_item(item_id: int, q: Union[str, None] = None):
 def read_item(productID: int, q: Union[str, None] = None):
     hScore = HealthScoreByID(productID)
     if hScore == -1:
-        return {"Progress Value": health_stack.peek(), "q":q, "health stack": health_stack, "score stack": score_stack}
+        return {"Progress Value": health_stack.peek(), "q":q, "health stack": health_stack, "total score stack": score_stack, "Products" : score_stack.products, "Individual scores" : score_stack.indiv_scores, "Distribution" : score_stack.categories}
     else:
         print(health_stack.push(hScore))
-        return {"Progress Value": hScore, "q":q, "health stack": health_stack, "score stack": score_stack}
+        return {"Progress Value": hScore, "q":q, "health stack": health_stack, "total score stack": score_stack, "Products" : score_stack.products, "Individual scores" : score_stack.indiv_scores, "Distribution" : score_stack.categories}
+    
