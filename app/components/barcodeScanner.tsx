@@ -2,11 +2,20 @@
 
 import React, { useRef, useState } from 'react';
 import Scanner from './Scanner';
+import FetchHp from './fetchHp';
+import HealthBar from './helthBar';
+
+
 
 const BarcodeScanner: React.FC = () => {
   const [scanning, setScanning] = useState(false);
   const [results, setResults] = useState<Array<{ codeResult: { code: string } }>>([]);
   const recentlyScanned = useRef<Set<String>>((new Set));
+  const [healthPoints, setHealthPoints] = useState<number>(50); // State to store HP value
+    
+  const handleFetchComplete = (result: number): void => {
+      setHealthPoints(result); 
+  };
 
 
   const toggleScanning = () => {
@@ -21,6 +30,7 @@ const BarcodeScanner: React.FC = () => {
     const newCode = result.codeResult.code;
   
     if (!recentlyScanned.current.has(newCode)) {      
+      
       setResults((prevResults) => [...prevResults, result]);
       recentlyScanned.current.add(newCode);
   
@@ -29,10 +39,12 @@ const BarcodeScanner: React.FC = () => {
       }, 2000);
     }
   };
-  
+  const lastScannedCode = results[results.length - 1]?.codeResult.code;
+
 
   return (
     <div style={{ textAlign: 'center', padding: '20px' }}>
+      <HealthBar n={healthPoints} />
       <h1>Barcode Scanner</h1>
       
       {/* Show Scanner while scanning is active */}
@@ -41,7 +53,7 @@ const BarcodeScanner: React.FC = () => {
       {/* Button to toggle scanning */}
       <button
         onClick={toggleScanning}
-        className={`nes-btn ${scanning ? 'is-error' : 'is-success'}`}
+        className={`nes-btn !text-black ${scanning ? 'is-error' : 'is-success' }`}
         style={{ marginTop: '20px', padding: '10px 20px' }}
       >
         {scanning ? 'Checkout' : 'Start'}
@@ -50,6 +62,8 @@ const BarcodeScanner: React.FC = () => {
       {/* Show results only when scanning stops */}
       {!scanning && (
         <div style={{ marginTop: '20px' }}>
+          <FetchHp productID={Number(lastScannedCode)} onFetchComplete={handleFetchComplete}/>
+          <h1>{healthPoints}</h1>
           <h2>Scanned Barcodes</h2>
           <ul>
             {results.map((result, index) => (
