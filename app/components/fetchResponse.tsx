@@ -12,8 +12,8 @@ const FetchResponse: React.FC<APIComponentProps> = ({ onFetchComplete }) => {
         if (!response.ok) throw new Error('Failed to fetch data');
         const data = await response.json();
         const isIndian = data;
-        console.log(isIndian);
-        onFetchComplete(isIndian);
+        console.log(isIndian['is_indian']);
+        onFetchComplete(isIndian['is_indian']);
       } catch (error) {
         console.error('Error fetching data:', error); 
       }

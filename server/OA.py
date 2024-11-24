@@ -17,12 +17,16 @@ openai.api_key = OPENAI_API_SECRET
 
 
 def ProdNameByID(ID : int):
-    product_id = str(ID)
-    request_url = f"https://world.openfoodfacts.org/api/v0/product/{product_id}.json"
-    response = requests.get(request_url) 
-    info_dict = json.loads(response.text)
+    try:
+        product_id = str(ID)
+        request_url = f"https://world.openfoodfacts.org/api/v0/product/{product_id}.json"
+        response = requests.get(request_url) 
+        info_dict = json.loads(response.text)
 
-    prod_name = info_dict['product']['product_name']
+        prod_name = info_dict['product']['product_name']
+    except:
+        prod_name = ''
+        
     return prod_name
 
 def generate_recipes(ID: int) -> str:
@@ -154,16 +158,16 @@ def isIndian(product_names) -> str :
 # print("2.\n", generate_new_recipes(1234)) # valid
 
 # print(isIndian(score_stack.products[:]))
-print(isIndian({
-    "Ghee",
-    "Ghee",
-      "Organic Fresh Young Chicken",
-      "Organic Fresh Young Chicken",
-      "Organic Fresh Young Chicken",
-      "Mini biscuits aux grains de chocolat",
-      "Mini biscuits aux grains de chocolat",
-      "Mini biscuits aux grains de chocolat",
-      "Mini biscuits aux grains de chocolat",
-      "Mini biscuits aux grains de chocolat"
+# print(isIndian({
+#     "Ghee",
+#     "Ghee",
+#       "Organic Fresh Young Chicken",
+#       "Organic Fresh Young Chicken",
+#       "Organic Fresh Young Chicken",
+#       "Mini biscuits aux grains de chocolat",
+#       "Mini biscuits aux grains de chocolat",
+#       "Mini biscuits aux grains de chocolat",
+#       "Mini biscuits aux grains de chocolat",
+#       "Mini biscuits aux grains de chocolat"
 
-}))
+# }))

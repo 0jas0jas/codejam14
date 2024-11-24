@@ -9,6 +9,7 @@ import { redirect } from 'next/navigation';
 import RecipeCard from './recipeCard';
 import FetchResponse from './fetchResponse';
 import FetchCal from './fetchCal';
+import IndianCard from './indianCard';
 
 interface BarcodeScannerProps {
   mode: 'freestyle' | 'cornfusion' | 'indian' | 'american';
@@ -20,8 +21,9 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ mode }) => {
   const recentlyScanned = useRef<Set<string>>(new Set());
   const { healthPoints, setHealthPoints } = useHealthPoints();
   const [currentProductID, setCurrentProductID] = useState<number | null>(null);
-  const [response, setResponse] = useState("");
+  const [response, setResponse] = useState<string>('');
   const [cal, setCal] = useState(0);
+  const [isIndian, setIsIndian] = useState("");
 
   // States for recipes in cornfusion mode
   const [names, setNames] = useState<string[]>([]);
@@ -40,8 +42,9 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ mode }) => {
   };
 
   const handleResponseFetchComplete = (fetchedResponse: string) => {
-    setResponse(fetchedResponse);
+    setIsIndian(fetchedResponse); 
   };
+  
 
   const handleCalFetchComplete = (fetchedCal: number) => {
     setCal(fetchedCal);
@@ -93,18 +96,23 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ mode }) => {
       )}
       
       {/* Trigger FetchResponse for indian mode */}
-      {currentProductID !== null && (mode === 'freestyle' || mode === 'indian' || mode === 'american') && (
+      {!scanning && mode === 'indian' && (
         <FetchResponse onFetchComplete={handleResponseFetchComplete} />
       )}
+      {!scanning && mode === 'indian' && isIndian && (
+        <IndianCard isIndian={isIndian} />
+      )}
+
+
 
       {/* Trigger FetchRecipes dynamically for cornfusion mode */}
       {currentProductID !== null && mode === 'cornfusion' && !showRecipes && (
         <FetchRecipes productID={currentProductID} onFetchComplete={handleRecipeFetchComplete} />
       )}
 
-      {/* Trigger FetchResponse for indian mode */}
+      {/* Trigger FetchResponse for american mode */}
       {currentProductID !== null && (mode === 'freestyle' || mode === 'indian' || mode === 'american') && (
-        <FetchCal onFetchComplete={handleResponseFetchComplete} />
+        <FetchCal onFetchComplete={handleCalFetchComplete} />
       )}
 
       <button
