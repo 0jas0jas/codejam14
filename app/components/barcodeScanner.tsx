@@ -3,12 +3,12 @@
 import React, { useRef, useState } from 'react';
 import Scanner from './Scanner';
 import FetchHp from './fetchHp';
+import FetchRecipes from './fetchRecipes';
 import { useHealthPoints } from '../contexts/HealthPointsContext';
-import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
 interface BarcodeScannerProps {
-  mode: 'freestyle' | 'cornfusion'
+  mode: 'freestyle' | 'cornfusion';
 }
 
 const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ mode }) => {
@@ -17,23 +17,37 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ mode }) => {
   const recentlyScanned = useRef<Set<string>>(new Set());
   const { healthPoints, setHealthPoints } = useHealthPoints();
   const [currentProductID, setCurrentProductID] = useState<number | null>(null);
-  const [linkWhere, setLink] = useState('');
 
-  // States for cornfusion
-  const [names, setNames] = useState<string[]>([]); // Array for recipe names
-  const [ingredients, setIngredients] = useState<string[][]>([]); // 2D array for ingredients
+  // States for recipes in cornfusion mode
+  const [names, setNames] = useState<string[]>([]);
+  const [ingredients, setIngredients] = useState<string[][]>([]);
+  const [showRecipes, setShowRecipes] = useState(false); // Controls recipe display in cornfusion mode
 
-  const handleFetchComplete = (result: number): void => {
+  
+
+  const handleHpFetchComplete = (result: number): void => {
     setHealthPoints(result); // Update healthPoints context
     setCurrentProductID(null); // Clear currentProductID after fetch
   };
 
+  const handleRecipeFetchComplete = (fetchedNames: string[], fetchedIngredients: string[][]) => {
+    setNames(fetchedNames);
+    setIngredients(fetchedIngredients);
+    setShowRecipes(true); // Show recipes after fetching is complete
+  };
+
   const toggleScanning = () => {
-    if (!scanning) {
+    if (scanning) {
+      // Handle stopping the scanner
+      setScanning(false);
+      if (mode === 'freestyle') {
+        redirect('/freestyle/anal'); // Navigate to /freestyle/anal when stopping in freestyle mode
+      }
+    } else {
+      // Handle starting the scanner
       recentlyScanned.current.clear();
+      setScanning(true);
     }
-    if (mode == 'freestyle') setLink('./freestyle/anal')
-    setScanning((prev) => !prev);
   };
 
   const handleDetected = (result: { codeResult: { code: string } }) => {
@@ -42,43 +56,47 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ mode }) => {
     if (!recentlyScanned.current.has(newCode)) {
       setResults((prevResults) => [...prevResults, result]);
       recentlyScanned.current.add(newCode);
-
-      // Set the current product ID to trigger FetchHp
       setCurrentProductID(Number(newCode));
 
-      // Remove the code from recently scanned after 2 seconds
+      if (mode === 'cornfusion') {
+        setScanning(false); // Stop scanning immediately for cornfusion mode
+      }
+
       setTimeout(() => {
         recentlyScanned.current.delete(newCode);
       }, 2500);
     }
-
-    if (mode === 'cornfusion') {
-      // Redirect to the /cornfusion/recipes page with productID as a query parameter
-      redirect(`/cornfusion/recipes?productID=${newCode}`);
-    }
   };
+
   return (
     <div style={{ textAlign: 'center', padding: '20px' }}>
       <h1>Barcode Scanner</h1>
 
       {/* Render Scanner while scanning is active */}
-      {scanning && <Scanner onDetected={handleDetected} />}
+      {scanning && mode === 'freestyle' && <Scanner onDetected={handleDetected} />}
+      {scanning && mode === 'cornfusion' && !showRecipes && <Scanner onDetected={handleDetected} />}
 
-      {/* Trigger FetchHp dynamically for the current productID */}
-      {currentProductID !== null && (
-        <FetchHp productID={currentProductID} onFetchComplete={handleFetchComplete} />
+      {/* Trigger FetchHp dynamically for freestyle mode */}
+      {currentProductID !== null && mode === 'freestyle' && (
+        <FetchHp productID={currentProductID} onFetchComplete={handleHpFetchComplete} />
       )}
-      {/* Button to toggle scanning */}
-      <Link href={linkWhere}><button
+
+      {/* Trigger FetchRecipes dynamically for cornfusion mode */}
+      {currentProductID !== null && mode === 'cornfusion' && !showRecipes && (
+        <FetchRecipes productID={currentProductID} onFetchComplete={handleRecipeFetchComplete} />
+      )}
+
+      <button
         onClick={toggleScanning}
         className={`nes-btn !text-black ${scanning ? 'is-error' : 'is-success'}`}
         style={{ marginTop: '20px', padding: '10px 20px' }}
+        disabled={mode === 'cornfusion' && showRecipes} // Disable scanning button when recipes are shown
       >
-        {scanning ? 'Checkout' : 'Start'}
-      </button></Link>
+        {scanning ? 'Checkout' : 'Start ►'}
+      </button>
 
-      {/* Show results only when scanning stops */}
-      {!scanning && (
+      {/* Show scanned barcodes for freestyle mode */}
+      {!scanning && mode === 'freestyle' && (
         <div style={{ marginTop: '20px' }}>
           <h2>Scanned Barcodes</h2>
           <ul>
@@ -88,6 +106,27 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ mode }) => {
               </li>
             ))}
           </ul>
+        </div>
+      )}
+
+      {/* Display recipes for cornfusion mode */}
+      {!scanning && mode === 'cornfusion' && showRecipes && (
+        <div style={{ marginTop: '20px' }}>
+          <h2>Recipes</h2>
+          {names.length > 0 ? (
+            names.map((name, index) => (
+              <div key={index} style={{ marginBottom: '20px' }}>
+                <h3>{name}</h3>
+                <ul>
+                  {ingredients[index]?.map((ingredient, idx) => (
+                    <li key={idx}>{ingredient}</li>
+                  ))}
+                </ul>
+              </div>
+            ))
+          ) : (
+            <p>No recipes found for this product.</p>
+          )}
         </div>
       )}
     </div>
