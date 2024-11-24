@@ -7,9 +7,10 @@ import FetchRecipes from './fetchRecipes';
 import { useHealthPoints } from '../contexts/HealthPointsContext';
 import { redirect } from 'next/navigation';
 import RecipeCard from './recipeCard';
+import FetchResponse from './fetchResponse';
 
 interface BarcodeScannerProps {
-  mode: 'freestyle' | 'cornfusion';
+  mode: 'freestyle' | 'cornfusion' | 'indian';
 }
 
 const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ mode }) => {
@@ -18,13 +19,15 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ mode }) => {
   const recentlyScanned = useRef<Set<string>>(new Set());
   const { healthPoints, setHealthPoints } = useHealthPoints();
   const [currentProductID, setCurrentProductID] = useState<number | null>(null);
+  const [response, setResponse] = useState("");
 
   // States for recipes in cornfusion mode
   const [names, setNames] = useState<string[]>([]);
   const [ingredients, setIngredients] = useState<string[][]>([]);
   const [showRecipes, setShowRecipes] = useState(false); // Controls recipe display in cornfusion mode
 
-
+  // State for Indian Score mode
+  const [indianScore, setIndianScore] = useState<number | null>(null);
 
   const handleHpFetchComplete = (result: number): void => {
     setHealthPoints(result); // Update healthPoints context
@@ -35,6 +38,10 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ mode }) => {
     setNames(fetchedNames);
     setIngredients(fetchedIngredients);
     setShowRecipes(true); // Show recipes after fetching is complete
+  };
+
+  const handleResponseFetchComplete = (fetchedResponse: string) => {
+    setResponse(fetchedResponse);
   };
 
   const toggleScanning = () => {
@@ -74,12 +81,17 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ mode }) => {
       <h1>Barcode Scanner</h1>
 
       {/* Render Scanner while scanning is active */}
-      {scanning && mode === 'freestyle' && <Scanner onDetected={handleDetected} />}
+      {scanning && (mode === 'freestyle' || mode === 'indian') && <Scanner onDetected={handleDetected} />}
       {scanning && mode === 'cornfusion' && !showRecipes && <Scanner onDetected={handleDetected} />}
 
       {/* Trigger FetchHp dynamically for freestyle mode */}
-      {currentProductID !== null && mode === 'freestyle' && (
+      {currentProductID !== null && (mode === 'freestyle' || mode === 'indian') && (
         <FetchHp productID={currentProductID} onFetchComplete={handleHpFetchComplete} />
+      )}
+      
+      {/* Trigger FetchHp dynamically for freestyle mode */}
+      {currentProductID !== null && (mode === 'freestyle' || mode === 'indian') && (
+        <FetchResponse onFetchComplete={handleResponseFetchComplete} />
       )}
 
       {/* Trigger FetchRecipes dynamically for cornfusion mode */}
@@ -97,7 +109,7 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ mode }) => {
       </button>
 
       {/* Show scanned barcodes for freestyle mode */}
-      {!scanning && mode === 'freestyle' && (
+      {!scanning && (mode === 'freestyle' || mode === 'indian') && (
         <div style={{ marginTop: '20px' }}>
           <h2>Scanned Barcodes</h2>
           <ul>

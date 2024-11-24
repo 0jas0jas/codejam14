@@ -19,7 +19,7 @@ export default function Home() {
         <Link href='/freestyle' className="nes-btn !text-black is-primary"><button type="button" >Freestyle</button></Link>
         <Link href='/cornfusion' className="nes-btn !text-black is-success"><button type="button">CornFusion</button></Link>
         <Link href='' className="nes-btn !text-black is-warning"><button type="button" >American Check</button></Link>
-        <Link href='' className="nes-btn !text-black is-error"><button type="button" >Indian Test</button></Link>
+        <Link href='indian' className="nes-btn !text-black is-error"><button type="button" >Indian Test</button></Link>
       </div>
     </div>
   );
