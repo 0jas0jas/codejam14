@@ -87,7 +87,7 @@ export default function Page() {
                 <ul>
                     {prodArr.map((product, index) => (
                         <li key={index}>
-                            {product}.............{scoreArr[index]}
+                            {product}......{scoreArr[index]}
                         </li>
                     ))}
                 </ul>
