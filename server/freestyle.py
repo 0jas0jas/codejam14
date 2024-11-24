@@ -112,6 +112,9 @@ def HealthScoreByID(ID : int):
         #print('stack after adding', score_stack)
 
         return int(TotalScoreByNutriscore(score_stack, score_stack.peek()))
+    
+def get_stats():
+    return (score_stack.products, score_stack.indiv_scores, score_stack.categories)
 
 if __name__ == '__main__':
     #score_stack.add_score(10)

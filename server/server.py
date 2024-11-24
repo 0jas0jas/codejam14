@@ -1,5 +1,5 @@
 from typing import Union
-from freestyle import HealthScoreByID, Stack, score_stack
+from freestyle import HealthScoreByID, Stack, score_stack, get_stats
 from fastapi.middleware.cors import CORSMiddleware
 
 from fastapi import FastAPI
@@ -38,4 +38,5 @@ def read_item(productID: int, q: Union[str, None] = None):
     
 @app.get("/freestyle/stats")
 def stats(q: Union[str, None] = None):
-    return {"q":q, "Products" : score_stack.products, "Individual scores" : score_stack.indiv_scores, "Distribution" : score_stack.categories}
+    prods, indivs, cats = get_stats()
+    return {"q":q, "good": cats['good'], "bad": cats['bad'], "neutral": cats['neutral'], "products" : prods, "individual scores" : indivs}
