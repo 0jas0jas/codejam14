@@ -5,54 +5,58 @@ import Scanner from './Scanner';
 import FetchHp from './fetchHp';
 import { useHealthPoints } from '../contexts/HealthPointsContext';
 
-
-
 const BarcodeScanner: React.FC = () => {
   const [scanning, setScanning] = useState(false);
   const [results, setResults] = useState<Array<{ codeResult: { code: string } }>>([]);
-  const recentlyScanned = useRef<Set<String>>((new Set));
-  const { healthPoints, setHealthPoints } = useHealthPoints(); // Access context
+  const recentlyScanned = useRef<Set<string>>(new Set());
+  const { healthPoints, setHealthPoints } = useHealthPoints();
+  const [currentProductID, setCurrentProductID] = useState<number | null>(null);
 
   const handleFetchComplete = (result: number): void => {
-      setHealthPoints(result); // Update healthPoints when API fetch completes
+    setHealthPoints(result); // Update healthPoints context
+    setCurrentProductID(null); // Clear currentProductID after fetch
   };
-
 
   const toggleScanning = () => {
     if (!scanning) {
-      recentlyScanned.current.clear(); 
+      recentlyScanned.current.clear();
     }
     setScanning((prev) => !prev);
   };
-  
 
   const handleDetected = (result: { codeResult: { code: string } }) => {
     const newCode = result.codeResult.code;
-  
-    if (!recentlyScanned.current.has(newCode)) {      
-      
+
+    if (!recentlyScanned.current.has(newCode)) {
       setResults((prevResults) => [...prevResults, result]);
       recentlyScanned.current.add(newCode);
-  
+
+      // Set the current product ID to trigger FetchHp
+      setCurrentProductID(Number(newCode));
+
+      // Remove the code from recently scanned after 2 seconds
       setTimeout(() => {
         recentlyScanned.current.delete(newCode);
-      }, 2000);
+      }, 2500);
     }
   };
-  const lastScannedCode = results[results.length - 1]?.codeResult.code;
-
 
   return (
     <div style={{ textAlign: 'center', padding: '20px' }}>
       <h1>Barcode Scanner</h1>
-      
-      {/* Show Scanner while scanning is active */}
+
+      {/* Render Scanner while scanning is active */}
       {scanning && <Scanner onDetected={handleDetected} />}
+
+      {/* Trigger FetchHp dynamically for the current productID */}
+      {currentProductID !== null && (
+        <FetchHp productID={currentProductID} onFetchComplete={handleFetchComplete} />
+      )}
 
       {/* Button to toggle scanning */}
       <button
         onClick={toggleScanning}
-        className={`nes-btn !text-black ${scanning ? 'is-error' : 'is-success' }`}
+        className={`nes-btn !text-black ${scanning ? 'is-error' : 'is-success'}`}
         style={{ marginTop: '20px', padding: '10px 20px' }}
       >
         {scanning ? 'Checkout' : 'Start'}
@@ -61,7 +65,6 @@ const BarcodeScanner: React.FC = () => {
       {/* Show results only when scanning stops */}
       {!scanning && (
         <div style={{ marginTop: '20px' }}>
-          <FetchHp productID={Number(lastScannedCode)} onFetchComplete={handleFetchComplete}/>
           <h1>{healthPoints}</h1>
           <h2>Scanned Barcodes</h2>
           <ul>
@@ -78,4 +81,3 @@ const BarcodeScanner: React.FC = () => {
 };
 
 export default BarcodeScanner;
-
