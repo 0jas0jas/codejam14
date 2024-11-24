@@ -37,13 +37,13 @@ class Stack:
         self.max_score += 10
         self.products.append(prod_name)
         if score_new < 0:
-            self.indiv_scores.append(score_new)
+            self.indiv_scores.append(str(score_new))
             self.categories['bad'] += 1
         elif score_new > 0:
             self.indiv_scores.append("+" + str(score_new))
             self.categories['good'] += 1
         else: 
-            self.indiv_scores.append(score_new)
+            self.indiv_scores.append(str(score_new))
             self.categories['neutral'] += 1
 
     def __str__(self):
