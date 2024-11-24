@@ -28,3 +28,11 @@ const FetchHp: React.FC<APIComponentProps> = ({ productID, onFetchComplete }) =>
 };
 
 export default FetchHp;
+
+
+/**
+ * in server.py make a new api call
+ * from OA import indian test function and from freestyle import the score_stack
+ * in the API call define the items in the way ojas did and the funtion will be response eqauals openai funtion(score_stack products)
+ * once you have the response make a return dictionary of queue to queue and a key named response mapping to response to an openai method
+ */

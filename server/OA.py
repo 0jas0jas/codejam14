@@ -25,7 +25,7 @@ def ProdNameByID(ID : int):
     prod_name = info_dict['product']['product_name']
     return prod_name
 
-def generate_recipes(ID: int):
+def generate_recipes(ID: int) -> str:
     found = HealthScoreByID(ID)
     if found == -1 :
         return json.dumps(-1)
@@ -76,7 +76,7 @@ def generate_recipes(ID: int):
 # write a prompt if a person selects I didnt find items for the recipe 
 # give 5 new recipes
 # new function that does the same thing but gives a prompt saying give 5 new recipes 
-def generate_new_recipes(ID: int):
+def generate_new_recipes(ID: int) -> str:
     found = HealthScoreByID(ID)
     if found == -1 :
         return json.dumps(-1)
@@ -126,8 +126,44 @@ def generate_new_recipes(ID: int):
     # Return the API response
     return response.choices[0].message.content
 
+# gets a list of items
+# prompts chatgpt to tell you if 50% of these items are indian or not
+# 
+
+def isIndian(product_names) -> str :
+    msg = f"""
+    Given a list of products "{product_names}", determine whether more than 50% of the list contains Indian Food Items or not. 
+    Just reply with a yes or no
+    """
+
+    # Call the OpenAI API
+    response = openai.chat.completions.create(
+        model="gpt-4o",  # Use the model you prefer
+        messages=[{"role": "user", "content": msg}],
+        max_tokens=500,  # Adjust token limit as needed
+        temperature=0.7
+    )
+
+    # Return the API response
+    return response.choices[0].message.content
+
 # print(generate_recipes(96619281893)) # valid
 # print(generate_recipes(84881900749)) # invalid
 
-print("1.\n", generate_recipes(1234)) # valid
-print("2.\n", generate_new_recipes(1234)) # valid
+# print("1.\n", generate_recipes(1234)) # valid
+# print("2.\n", generate_new_recipes(1234)) # valid
+
+# print(isIndian(score_stack.products[:]))
+print(isIndian({
+    "Ghee",
+    "Ghee",
+      "Organic Fresh Young Chicken",
+      "Organic Fresh Young Chicken",
+      "Organic Fresh Young Chicken",
+      "Mini biscuits aux grains de chocolat",
+      "Mini biscuits aux grains de chocolat",
+      "Mini biscuits aux grains de chocolat",
+      "Mini biscuits aux grains de chocolat",
+      "Mini biscuits aux grains de chocolat"
+
+}))
