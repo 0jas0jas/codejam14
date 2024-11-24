@@ -1,5 +1,3 @@
-import os
-import re 
 import datetime
 import json
 
@@ -70,11 +68,11 @@ def HealthScoreByID(ID : int):
 
     #print('response received')
 
+    if info_dict['status'] == 0: # product not found in directory
+        return -1 
+
     # find most recent year for which nutriscore exists
     current_year = str(datetime.date.today().year)
-
-    if len(info_dict['product']['nutriscore']) == 0:
-            print("No score exists for this product")
 
     while True:
         if current_year not in info_dict['product']['nutriscore']:
@@ -92,10 +90,10 @@ def HealthScoreByID(ID : int):
         #print(grade)
     else:
         score = score_map[grade]
-        print(score)
-        print('stack before adding', score_stack)
+        #print(score)
+        #print('stack before adding', score_stack)
         score_stack.add_score(score)
-        print('stack after adding', score_stack)
+        #print('stack after adding', score_stack)
 
         return int(TotalScoreByNutriscore(score_stack, score_stack.peek()))
 
