@@ -6,6 +6,7 @@ import FetchHp from './fetchHp';
 import FetchRecipes from './fetchRecipes';
 import { useHealthPoints } from '../contexts/HealthPointsContext';
 import { redirect } from 'next/navigation';
+import RecipeCard from './recipeCard';
 
 interface BarcodeScannerProps {
   mode: 'freestyle' | 'cornfusion';
@@ -23,7 +24,7 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ mode }) => {
   const [ingredients, setIngredients] = useState<string[][]>([]);
   const [showRecipes, setShowRecipes] = useState(false); // Controls recipe display in cornfusion mode
 
-  
+
 
   const handleHpFetchComplete = (result: number): void => {
     setHealthPoints(result); // Update healthPoints context
@@ -113,20 +114,8 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ mode }) => {
       {!scanning && mode === 'cornfusion' && showRecipes && (
         <div style={{ marginTop: '20px' }}>
           <h2>Recipes</h2>
-          {names.length > 0 ? (
-            names.map((name, index) => (
-              <div key={index} style={{ marginBottom: '20px' }}>
-                <h3>{name}</h3>
-                <ul>
-                  {ingredients[index]?.map((ingredient, idx) => (
-                    <li key={idx}>{ingredient}</li>
-                  ))}
-                </ul>
-              </div>
-            ))
-          ) : (
-            <p>No recipes found for this product.</p>
-          )}
+          <RecipeCard titles={names} recipes={ingredients} />
+
         </div>
       )}
     </div>
