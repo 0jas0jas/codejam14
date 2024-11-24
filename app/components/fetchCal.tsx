@@ -12,8 +12,8 @@ const FetchCal: React.FC<APIComponentProps> = ({ onFetchComplete }) => {
         if (!response.ok) throw new Error('Failed to fetch data');
         const data = await response.json();
         const calories = data;
-        console.log(calories);
-        onFetchComplete(calories);
+        console.log(calories['total calories']);
+        onFetchComplete(calories['total calories']);
       } catch (error) {
         console.error('Error fetching data:', error); 
       }
